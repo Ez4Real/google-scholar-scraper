@@ -1,0 +1,4 @@
+env
+.env
+client_key.json
+geckodriver.log
