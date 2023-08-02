@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 load_dotenv('config/.env')
 
 SCRAPER_API_KEY = os.getenv('SCRAPER_API_KEY')
+EMAIL_TO_SHARE = os.getenv('EMAIL_TO_SHARE')
 
 scope = [
     'https://www.googleapis.com/auth/spreadsheets',
@@ -15,8 +16,7 @@ scope = [
 creds = ServiceAccountCredentials.from_json_keyfile_name('client_key.json', scope)
 client = gspread.authorize(creds)
 
-google_sheet_name = 'iMotions Articles'
-sheet = client.create(google_sheet_name)
+sheet = client.create('iMotions Articles')
 
 worksheet = sheet.get_worksheet(0)
 worksheet.append_row(['Article Title',
@@ -40,10 +40,6 @@ while True:
             authors = ", ".join(article["bib"]["author"])
             pub_year = article["bib"]["pub_year"]
             pub_url = article["pub_url"]
-            print("\nTitle:", article_title)
-            print("Authors:", authors)
-            print("Year:", pub_year)
-            print("PUB URL:", pub_url)
             
             articles_data.append([article_title, authors, pub_year, pub_url])
     except StopIteration:
@@ -51,4 +47,4 @@ while True:
     
 worksheet.append_rows(articles_data)
 
-sheet.share('butilka05roma@gmail.com', perm_type='user', role='writer')
+sheet.share(EMAIL_TO_SHARE, perm_type='user', role='writer')
