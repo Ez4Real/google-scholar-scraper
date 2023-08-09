@@ -23,28 +23,38 @@ worksheet.append_row(['Article Title',
                       'Author Names',
                       'Publication Year',
                       'Publication Link'])
-
+                   
 
 pg = ProxyGenerator()
 pg.ScraperAPI(SCRAPER_API_KEY)
 scholarly.use_proxy(pg)
 
-search_query = scholarly.search_pubs('iMotions')
+search_query = scholarly.search_pubs('"iMotions"', citations=True)
 articles_data = []
+# article_count = 0
 
 while True:
     try:
         article = next(search_query)
-        if 'pub_url' in article:
+        if 'bib' in article:
             article_title = article["bib"]["title"]
             authors = ", ".join(article["bib"]["author"])
             pub_year = article["bib"]["pub_year"]
-            pub_url = article["pub_url"]
+            #pub_url = article["pub_url"]
+            pub_url = article["pub_url"] if 'pub_url' in article else None
+            
+            
             
             articles_data.append([article_title, authors, pub_year, pub_url])
+            # article_count += 1
+            # print(f'\n{article_count}.')
+            # print('Title: ', article_title)
+            # print('Authors: ', authors)
+            # print('Year: ', pub_year)
+            # print('URL: ', pub_url)
     except StopIteration:
         break
-    
+
 worksheet.append_rows(articles_data)
 
 sheet.share(EMAIL_TO_SHARE, perm_type='user', role='writer')
